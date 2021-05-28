@@ -59,8 +59,8 @@ VCC                    any microcontroler output pin - but set also ROTARY_ENCOD
 //instead of changing here, rather change numbers above
 AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN, ROTARY_ENCODER_BUTTON_PIN, ROTARY_ENCODER_VCC_PIN, ROTARY_ENCODER_STEPS);
 
-float g1 = 7.7264;
-float g2 = .8684;
+float g1 = 2.16;
+float g2 = .272;
 static unsigned long lastTime = 0; 
 static unsigned long deltaTime = 0;
 static float theta = 0;
@@ -91,7 +91,7 @@ void rotary_loop()
 
   encoderread = rotaryEncoder.readEncoder();
   deltaTime = (millis()-lastTime);
-  theta = encoderread/2500*3.141592653589793238;
+  theta = encoderread/2500*2*3.141592653589793238;
   theta_dot = (theta-theta_old)/deltaTime;
   
 	//Serial.print("Value: ");
@@ -102,10 +102,11 @@ void setup6302() {
    cm.addToggle(&togglepoles, "Use Hand Placed Poles?");
    cm.addPlot(&encoderread, "Encoder", 0, 2500);
    cm.addPlot(&current, "Current", 0, 2);
-   cm.addSlider(&PWMval, "Set PWM", 0, 1047, 1);
+   cm.addPlot(&PWMval_fb, "PWMval", 0, 1023);
+   cm.addSlider(&PWMval, "Set PWM", 0, 1023, 1);
    cm.addPlot(&loopTime, "Looptime",0,.5);
-   cm.addSlider(&g1,"G1",0,5000,.01);
-   cm.addSlider(&g2,"G2",0,5000,0.001);
+   cm.addSlider(&g1,"G1",0,30,.0001);
+   cm.addSlider(&g2,"G2",0,30,0.0001);
    // Connect via serial
    cm.connect(&Serial, 115200);
 }
@@ -187,7 +188,7 @@ void loop()
 //  Serial.print(I);
 //  Serial.println(" amps");
 
-PWMval_fb = PWMval + (-g1*theta-g2*theta_dot);
+PWMval_fb = constrain(PWMval + (-g1*theta-g2*theta_dot),0,1023);
   ///// For Motor
   // decrease the Motor RPMs
   // continuous decreasing
