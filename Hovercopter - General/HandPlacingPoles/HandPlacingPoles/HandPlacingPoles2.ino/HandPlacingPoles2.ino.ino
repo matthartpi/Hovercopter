@@ -2,7 +2,7 @@
 #include "Arduino.h"
 #include <Six302.h> //for plotting
 #include <math.h>   //for plotting
-
+//#define MAX_DEBUG_LEN 1000;
 //6302view setup
 CommManager cm(1000, 10000);
 float encoderread; //Value of encoder
@@ -23,7 +23,7 @@ const int resolution = 10; // resolution 8, 10, 12, 15
 
 
 
-///// Analog Input Resistor Current Test /////
+///// Analog Input Resistor Current Testx /////
 const int UpR = 33;    // select the input pin for the higher resistor voltage side
 const int DnR = 32;    // select the pin for the lower resistor voltage side
 int Vup_ADC, Vdn_ADC;  // declare variables
@@ -67,50 +67,73 @@ static float theta = 0;
 static float theta_old = 0;
 static float theta_dot = 0;
 static float PWMval_fb;
-
+static float floatDeltaTime;
 void rotary_onButtonClick()
 {
-	static unsigned long lastTimePressed = 0;
-	//ignore multiple press in that time milliseconds
-	if (millis() - lastTimePressed < 500)
-	{
-		return;
-	}
-	lastTimePressed = millis();
-	//Serial.print("button pressed at ");
-	//Serial.println(millis());
+//	static unsigned long lastTimePressed = 0;
+//	//ignore multiple press in that time milliseconds
+//	if (millis() - lastTimePressed < 500)
+//	{
+//		return;
+//	}
+//	lastTimePressed = millis();
+//	//Serial.print("button pressed at ");
+//	//Serial.println(millis());
 }
 
 void rotary_loop()
 {
+	deltaTime = millis()-lastTime;
+	
+  //floatDeltaTime = float(deltaTime)/1000.;
 	//dont print anything unless value changed
 	if (!rotaryEncoder.encoderChanged())
 	{
+    theta_dot = 0;
 		return;
 	}
-
+  lastTime = millis();
   encoderread = rotaryEncoder.readEncoder();
-  deltaTime = (millis()-lastTime);
-  theta = encoderread/2500*2*3.141592653589793238;
-  theta_dot = (theta-theta_old)/deltaTime;
+  theta_old = theta;
+  if (encoderread < 1250){
+    theta = encoderread/2500*6.28318530718;
+  } else {
+    theta = -(2500-encoderread)/2500*6.28318530718;
+  }
+  if (deltaTime != 0){
+    theta_dot = (theta-theta_old)/(float(deltaTime)/1000.);
+  }
+//  Serial.print(float(lastTime)/1000.,6);
+//  Serial.print(",");
+//  Serial.print(theta,6);
+//  Serial.print(",");
+//  Serial.println(theta_dot,10);
   
 	//Serial.print("Value: ");
 	//Serial.println(rotaryEncoder.readEncoder());
 }
-void setup6302() {
+
+void setup6302(){//void* pvParameters) {
    cm.addButton(&setzero,"Set Zero");
    cm.addToggle(&togglepoles, "Use Hand Placed Poles?");
-   cm.addPlot(&encoderread, "Encoder", 0, 2500);
-   cm.addPlot(&current, "Current", 0, 2);
+   cm.addPlot(&theta, "Theta", 0, 2*3.141592);
+   cm.addPlot(&theta_dot, "Theta_dot", -6.283184, 6.283184);
+   //cm.addPlot(&current, "Current", 0, 2);
    cm.addPlot(&PWMval_fb, "PWMval", 0, 1023);
+//   cm.addPlot(&floatDeltaTime,"floatdeltaTime",0,200);
    cm.addSlider(&PWMval, "Set PWM", 0, 1023, 1);
-   cm.addPlot(&loopTime, "Looptime",0,.5);
-   cm.addSlider(&g1,"G1",0,30,.0001);
-   cm.addSlider(&g2,"G2",0,30,0.0001);
+   //cm.addPlot(&loopTime, "Looptime",0,.5);
+   cm.addSlider(&g1,"G1",0,100,.0001);
+   cm.addSlider(&g2,"G2",0,100,0.0001);
    // Connect via serial
    cm.connect(&Serial, 115200);
+//     Serial.begin(115200);
 }
-
+void loop6302(void* pvParameters){
+  for(;;){
+    cm.step();
+  }
+}
 void setupRotary(){
   //we must initialize rotary encoder
   rotaryEncoder.begin();
@@ -142,10 +165,14 @@ void setupPWM(){
 
 void setup()
 {
+  setup6302();
   //Plot Testing
   // Example plot
-
-  setup6302();
+//  xTaskCreatePinnedToCore(setup6302,"view6302_setup",150000,NULL,1,NULL,0);
+//  delay(500);
+  xTaskCreatePinnedToCore(loop6302,"view6302_loop",150000,NULL,1,NULL,0);
+  delay(500);
+//  setup6302();
 	//Serial.begin(115200);
   setupRotary();
   setupPWM();
@@ -153,7 +180,7 @@ void setup()
 
 void loop()
 {
-  static unsigned long lastloopstart = millis();
+  //static unsigned long lastloopstart = millis();
   //Plot Testing
   if (setzero == true) {
     rotaryEncoder.reset();
@@ -188,7 +215,7 @@ void loop()
 //  Serial.print(I);
 //  Serial.println(" amps");
 
-PWMval_fb = constrain(PWMval + (-g1*theta-g2*theta_dot),0,1023);
+PWMval_fb = constrain((PWMval + (-g1*theta-g2*theta_dot)),0,1023);
   ///// For Motor
   // decrease the Motor RPMs
   // continuous decreasing
@@ -198,8 +225,8 @@ PWMval_fb = constrain(PWMval + (-g1*theta-g2*theta_dot),0,1023);
     } else  {
       ledcWrite(MotChannel, (int)PWMval);
     }
-    loopTime = (float)(millis()-lastloopstart);
-    cm.headroom();
+    //loopTime = (float)(millis()-lastloopstart);
+//    cm.headroom();
 //  cm.step();
 //
 //	//delay(50); //or do whatever you need to do...
