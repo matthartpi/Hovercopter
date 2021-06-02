@@ -17,7 +17,7 @@ float loopTime;
 const int MotPin = 5;  // 5 corresponds to GPIO5
 
 // setting PWM properties
-const int freq = 5000;
+const int freq = 15000;
 const int MotChannel = 0;
 const int resolution = 10; // resolution 8, 10, 12, 15
 
@@ -46,8 +46,8 @@ VCC                    any microcontroler output pin - but set also ROTARY_ENCOD
                         in this example pin 25
 
 */
-#define ROTARY_ENCODER_A_PIN 34 //16
-#define ROTARY_ENCODER_B_PIN 35  //4
+#define ROTARY_ENCODER_A_PIN 16
+#define ROTARY_ENCODER_B_PIN 4
 #define ROTARY_ENCODER_BUTTON_PIN 35
 #define ROTARY_ENCODER_VCC_PIN -1 /* 27 put -1 of Rotary encoder Vcc is connected directly to 3,3V; else you can use declared output pin for powering rotary encoder */
 
@@ -160,7 +160,7 @@ void setupRotary(){
 void setupPWM(){
   ledcSetup(MotChannel, freq, resolution);
   // attach the channel to GPIO5 to be controlled
-  ledcAttachPin(MotPin, MotChannel);  
+  ledcAttachPin(MotPin, MotChannel);
 }
 
 void setup()
@@ -225,9 +225,8 @@ PWMval_fb = constrain((PWMval + (-g1*theta-g2*theta_dot)),0,1023);
     } else  {
       ledcWrite(MotChannel, (int)PWMval);
     }
-    //loopTime = (float)(millis()-lastloopstart);
 //    cm.headroom();
 //  cm.step();
 //
-//	//delay(50); //or do whatever you need to do...
+  delay(1); //or do whatever you need to do...
 }
