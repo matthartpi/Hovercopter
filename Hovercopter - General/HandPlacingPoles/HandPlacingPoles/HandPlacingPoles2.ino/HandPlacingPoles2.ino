@@ -17,7 +17,7 @@ float loopTime;
 const int MotPin = 5;  // 5 corresponds to GPIO5
 
 // setting PWM properties
-const int freq = 15000;
+const int freq = 5000;
 const int MotChannel = 0;
 const int resolution = 10; // resolution 8, 10, 12, 15
 
@@ -228,5 +228,5 @@ PWMval_fb = constrain((PWMval + (-g1*theta-g2*theta_dot)),0,1023);
 //    cm.headroom();
 //  cm.step();
 //
-  delay(1); //or do whatever you need to do...
+  delay(5); //or do whatever you need to do...
 }
