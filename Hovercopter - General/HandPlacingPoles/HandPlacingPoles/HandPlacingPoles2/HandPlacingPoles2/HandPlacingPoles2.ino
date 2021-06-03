@@ -89,7 +89,7 @@ void rotary_loop()
 	//dont print anything unless value changed
 	if (!rotaryEncoder.encoderChanged())
 	{
-    //theta_dot = 0;
+    theta_dot = 0;
 		return;
 	}
   lastTime = millis();
