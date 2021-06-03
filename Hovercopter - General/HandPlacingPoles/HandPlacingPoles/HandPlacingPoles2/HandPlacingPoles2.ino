@@ -60,7 +60,7 @@ VCC                    any microcontroler output pin - but set also ROTARY_ENCOD
 AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN, ROTARY_ENCODER_BUTTON_PIN, ROTARY_ENCODER_VCC_PIN, ROTARY_ENCODER_STEPS);
 
 float g1 = 2.16;
-float g2 = .272;
+float g2 = 0.272;
 static unsigned long lastTime = 0; 
 static unsigned long deltaTime = 0;
 static float theta = 0;
@@ -95,14 +95,17 @@ void rotary_loop()
   lastTime = millis();
   encoderread = rotaryEncoder.readEncoder();
   theta_old = theta;
+  
   if (encoderread < 1250){
     theta = encoderread/2500*6.28318530718;
   } else {
     theta = -(2500-encoderread)/2500*6.28318530718;
   }
+  
   if (deltaTime != 0){
-    theta_dot = (theta-theta_old)/(float(deltaTime)/1000.);
+    theta_dot = (theta-theta_old)/((float(deltaTime)/1000.));   
   }
+  
 //  Serial.print(float(lastTime)/1000.,6);
 //  Serial.print(",");
 //  Serial.print(theta,6);
@@ -116,15 +119,15 @@ void rotary_loop()
 void setup6302(){//void* pvParameters) {
    cm.addButton(&setzero,"Set Zero");
    cm.addToggle(&togglepoles, "Use Hand Placed Poles?");
-   cm.addPlot(&theta, "Theta", 0, 2*3.141592);
+   cm.addPlot(&theta, "Theta", 0.5*-3.141592, 0.5*3.141592);
    cm.addPlot(&theta_dot, "Theta_dot", -6.283184, 6.283184);
    //cm.addPlot(&current, "Current", 0, 2);
    cm.addPlot(&PWMval_fb, "PWMval", 0, 1023);
 //   cm.addPlot(&floatDeltaTime,"floatdeltaTime",0,200);
-   cm.addSlider(&PWMval, "Set PWM", 0, 1023, 1);
+   cm.addSlider(&PWMval, "Set PWM", 0, 200, 1);
    //cm.addPlot(&loopTime, "Looptime",0,.5);
-   cm.addSlider(&g1,"G1",0,100,.0001);
-   cm.addSlider(&g2,"G2",0,100,0.0001);
+   cm.addSlider(&g1,"G1",0,5,.0001);
+   cm.addSlider(&g2,"G2",0,5,0.0001);
    // Connect via serial
    cm.connect(&Serial, 115200);
 //     Serial.begin(115200);
@@ -215,7 +218,7 @@ void loop()
 //  Serial.print(I);
 //  Serial.println(" amps");
 
-PWMval_fb = constrain((PWMval + (-g1*theta-g2*theta_dot)),0,1023);
+PWMval_fb = constrain((PWMval + (-g1*theta-g2*theta_dot)*1023),0,1023);
   ///// For Motor
   // decrease the Motor RPMs
   // continuous decreasing
