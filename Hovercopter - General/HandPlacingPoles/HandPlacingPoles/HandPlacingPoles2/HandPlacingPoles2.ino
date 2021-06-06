@@ -59,8 +59,8 @@ VCC                    any microcontroler output pin - but set also ROTARY_ENCOD
 //instead of changing here, rather change numbers above
 AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN, ROTARY_ENCODER_BUTTON_PIN, ROTARY_ENCODER_VCC_PIN, ROTARY_ENCODER_STEPS);
 
-float g1 = 0.1720;
-float g2 = 0.1129;
+float g1 = 0.136183;
+float g2 = 0.050262;
 static unsigned long lastTime = 0; 
 static unsigned long deltaTime = 0;
 static float theta = 0;
