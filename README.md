@@ -38,4 +38,12 @@ Simulating the system with a damping factor in [a Jupyter Lab IPython Notebook](
 ![SimAngAccVsTm](https://github.com/matthartpi/Hovercopter/blob/master/HangingDown/SimulatedAngularAccelerationVsTime.png)
 
 
-## 
+## Hand-Placing Poles
+Using the [Jupyter Lab IPython Notebook](https://github.com/matthartpi/Hovercopter/blob/master/FullOrderObserver/HoverCopterFullOrdObs.ipynb), we passed our system's state space model A and B matrices and guessed poles into the place() function to calculate the gains that multiply to the state variables. These gains were then used in the [Arduino Code](https://github.com/matthartpi/Hovercopter/blob/master/HandPlacingPoles/HandPlacingPoles/HandPlacingPoles2/HandPlacingPoles2.ino) to multiply with the state variables in feedback to control the pulse-width modulation (PWM) being sent to the motor and keeping it hovering horizontally despite external disturbances like a hit up or down with your hand.
+
+The performance of the system is shown in a [video](https://github.com/matthartpi/Hovercopter/blob/master/HandPlacingPoles/HandPlacingPolesPerformance.mp4) that you can download to watch if you are interested in a visual demonstration.
+
+## LQR Pole Placing
+
+
+## Full Order Observer
