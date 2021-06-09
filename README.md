@@ -48,5 +48,5 @@ With linear-quadratic regulator control, the [lqr() Octave function](https://oct
 
 We found that the system responded more smoothly with LQR than hand-placing poles. The Arduino code was the same as for hand-placing poles. The performance of the system is shown in a [video](https://github.com/matthartpi/Hovercopter/blob/master/LQR/LQR_Performance.mp4) that you can download to watch if you are interested in a visual demonstration.
 
-## Full Order Observer
+## Kalman Full Order Observer
 A full order observer can be used to estimate the next state variables from the inputs to a system. The [lqe() Octave function](https://octave.sourceforge.io/control/function/lqe.html) can be used to set up an observer and get the observer poles and gains. For more details see this [Jupyter Notebook](https://github.com/matthartpi/Hovercopter/blob/master/FullOrderObserver/HoverCopterFullOrdObs.ipynb). We weren't able to test the observer on the hover arm physically, but it was simulated in the Jupyter Notebook linked above.
