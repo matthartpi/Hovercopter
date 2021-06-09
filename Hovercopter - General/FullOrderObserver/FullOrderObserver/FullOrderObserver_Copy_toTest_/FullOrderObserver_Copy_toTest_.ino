@@ -5,9 +5,10 @@
 //#define MAX_DEBUG_LEN 1000;
 //6302view setup
 CommManager cm(5000, 50000);
-float encoderread; //Value of encoder
-bool setzero; //button to reset zero of encoder
-bool togglepoles; //toggle to use poles or not
+float encoderread; // Value of encoder
+bool setzero; // button to reset zero of encoder
+bool togglepoles = false; // toggle to use poles or not
+bool toggleObserve = false; // toggle observer on/off
 float PWMval; 
 float current; //
 float loopTime;
@@ -59,8 +60,8 @@ VCC                    any microcontroler output pin - but set also ROTARY_ENCOD
 //instead of changing here, rather change numbers above
 AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN, ROTARY_ENCODER_BUTTON_PIN, ROTARY_ENCODER_VCC_PIN, ROTARY_ENCODER_STEPS);
 
-float g1 = 0.1720;
-float g2 = 0.1129;
+float g1 = 0.1720;  // Gain for angle position 
+float g2 = 0.1129;  // Gain for angular velocity
 static unsigned long lastTime = 0; 
 static unsigned long deltaTime = 0;
 static float theta = 0;
@@ -68,6 +69,20 @@ static float theta_old = 0;
 static float theta_dot = 0;
 static float PWMval_fb;
 static float floatDeltaTime;
+
+float A[2][2] = {{0.0, 1.0}, {-28.3740, -0.8}};
+float B[2] = {0, 125.7545};
+
+// Observer Values
+float k1 = 0.00066085;    // Gain for observer position
+float k2 = -0.00049978;   // Gain for observer velocity
+float estimatedX_old[2] = {0.0, 0.0}; //
+float estimatedX[2] = {0.0, 0.0}; 
+float XHat_old[2] = {0.0, 0.0};  // Last observer estimated state x
+float XHat[2] = {0.0, 0.0};  // Current observer estimated state x
+float estimatedXDiff[2] = {0.0, 0.0};  // Difference between measured state x and observer estimated state xHat
+
+
 void rotary_onButtonClick()
 {
 //  static unsigned long lastTimePressed = 0;
@@ -125,15 +140,23 @@ void rotary_loop()
 void setup6302(){//void* pvParameters) {
    cm.addButton(&setzero,"Set Zero");
    cm.addToggle(&togglepoles, "Use Hand Placed Poles?");
+   cm.addToggle(&toggleObserve, "Use Kalman Full Order Observer?");
    cm.addPlot(&theta, "Theta", 0.5*-3.141592, 0.5*3.141592);
-   cm.addPlot(&theta_dot, "Theta_dot", -6.283184, 6.283184);
+   cm.addPlot(&theta_dot, "Theta_dot", -6.283184, 6.283184);   
    //cm.addPlot(&current, "Current", 0, 2);
    cm.addPlot(&PWMval_fb, "PWMval", 0, 1023);
-//   cm.addPlot(&floatDeltaTime,"floatdeltaTime",0,200);
+   //cm.addPlot(&floatDeltaTime,"floatdeltaTime",0,200);
    cm.addSlider(&PWMval, "Set PWM", 0, 200, 1);
    //cm.addPlot(&loopTime, "Looptime",0,.5);
    cm.addSlider(&g1,"G1",0,5,.0001);
    cm.addSlider(&g2,"G2",0,5,0.0001);
+   // Observer Values
+   cm.addPlot(&XHat[0],"Observed Theta",-PI,PI);
+   cm.addPlot(&XHat[1],"Observed Theta_dot",-10,10);
+   cm.addPlot(&estimatedXDiff[0],"Theta - Observed Theta",-PI,PI);
+   cm.addPlot(&estimatedXDiff[1],"Theta_dot - Observed Theta_dot",-10,10);
+   cm.addSlider(&k1,"K1",0,100,0.001);
+   cm.addSlider(&k2,"K2",0,100,0.001);
    // Connect via serial
    cm.connect(&Serial, 115200);
 //     Serial.begin(115200);
@@ -194,10 +217,18 @@ void loop()
   if (setzero == true) {
     rotaryEncoder.reset();
   }
+
   
   //in loop call your custom function which will process rotary encoder values
   rotary_loop();
-//  
+
+  // Copy read values to estimatedX and estimatedX_old
+  estimatedX_old[0] = theta_old;
+  estimatedX[0] = theta;
+  estimatedX_old[1] = estimatedX[1];
+  estimatedX[1] = theta_dot;
+
+
     ///// For Current
   // read the value from higher resistor voltage
   Vup_ADC = analogRead(UpR);
@@ -216,7 +247,7 @@ void loop()
   Vdn = (Vdn_ADC * 3.3)/(4095);
   // calculate the current
   current = (Vup - Vdn)/0.5;
-
+ 
   
   // print actual current value
 //  Serial.print("Current = ");
