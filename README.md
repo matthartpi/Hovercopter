@@ -4,7 +4,7 @@
 Code from this repo https://github.com/almonds0166/6302view/tree/master/6302view. It is used to monitor and update variables in real time from the Arduino code that are passed to 6302view. They can be plotted in a graph or changed via a slider in the gui.html that the user opens in their web browser.
 
 ## Encoder
-To measure the angle of the hover arm, we utilized a TRDA-2E shaft angle encoder (SAE). Using the AiEsp32RotaryEncoder.h header file, we could read the angle that the arm was at. This was used to define the state variables, which were angle and angular velocity.
+To measure the angle of the hover arm, we utilized a [TRDA-2E shaft angle encoder (SAE)](https://github.com/matthartpi/Hovercopter/blob/master/SAE/TRDA-2E_SAEncoders.pdf). Using the AiEsp32RotaryEncoder.h header file, we could read the angle that the arm was at. This was used to define the state variables, which were angle and angular velocity.
 
 
 ## Building/Testing the PCB and Hover Arm
@@ -39,11 +39,14 @@ Simulating the system with a damping factor in [a Jupyter Lab IPython Notebook](
 
 
 ## Hand-Placing Poles
-Using the [Jupyter Lab IPython Notebook](https://github.com/matthartpi/Hovercopter/blob/master/FullOrderObserver/HoverCopterFullOrdObs.ipynb), we passed our system's state space model A and B matrices and guessed poles into the place() function to calculate the gains that multiply to the state variables. These gains were then used in the [Arduino Code](https://github.com/matthartpi/Hovercopter/blob/master/HandPlacingPoles/HandPlacingPoles/HandPlacingPoles2/HandPlacingPoles2.ino) to multiply with the state variables in feedback to control the pulse-width modulation (PWM) being sent to the motor and keeping it hovering horizontally despite external disturbances like a hit up or down with your hand.
+Using the [Jupyter Lab IPython Notebook](https://github.com/matthartpi/Hovercopter/blob/master/FullOrderObserver/HoverCopterFullOrdObs.ipynb), we passed our system's state space model A and B matrices and guessed poles into the [place() Octave function](https://octave.sourceforge.io/control/function/place.html) to calculate the gains that multiply to the state variables. These gains were then used in the [Arduino Code](https://github.com/matthartpi/Hovercopter/blob/master/HandPlacingPoles/HandPlacingPoles/HandPlacingPoles2/HandPlacingPoles2.ino) to multiply with the state variables in feedback to control the pulse-width modulation (PWM) being sent to the motor and keeping it hovering horizontally despite external disturbances like a hit up or down with your hand.
 
 The performance of the system is shown in a [video](https://github.com/matthartpi/Hovercopter/blob/master/HandPlacingPoles/HandPlacingPolesPerformance.mp4) that you can download to watch if you are interested in a visual demonstration.
 
 ## LQR Pole Placing
+With linear-quadratic regulator control, the [lqr() Octave function](https://octave.sourceforge.io/control/function/lqr.html) takes in the A and B state space model matrices and also used Q and R matrices to set the gains. The Q matrix is a diagonal matrix that defines the "weight" of each state variable how quickly it should be corrected. The R matrix represents the cost of control to move the system back to where it should be.
 
+We found that the system responded more smoothly with LQR than hand-placing poles. The Arduino code was the same as for hand-placing poles. The performance of the system is shown in a [video](https://github.com/matthartpi/Hovercopter/blob/master/LQR/LQR_Performance.mp4) that you can download to watch if you are interested in a visual demonstration.
 
 ## Full Order Observer
+A full order observer can be used to estimate the next state variables from the inputs to a system. The [lqe() Octave function](https://octave.sourceforge.io/control/function/lqe.html) can be used to set up an observer and get the observer poles and gains. For more details see this [Jupyter Notebook](https://github.com/matthartpi/Hovercopter/blob/master/FullOrderObserver/HoverCopterFullOrdObs.ipynb). We weren't able to test the observer on the hover arm physically, but it was simulated in the Jupyter Notebook linked above.
