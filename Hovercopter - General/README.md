@@ -7,7 +7,7 @@ Code from this repo https://github.com/almonds0166/6302view/tree/master/6302view
 To measure the angle of the hover arm, we utilized a TRDA-2E shaft angle encoder (SAE). Using the AiEsp32RotaryEncoder.h header file, we could read the angle that the arm was at. This was used to define the state variables, which were angle and angular velocity.
 
 
-## ESP32, PCB, and Hover Arm
+## Building/Testing the PCB and Hover Arm
 
 ### PCB
 ![PCB](https://github.com/matthartpi/Hovercopter/blob/master/Hovercopter%20-%20General/BuildingPCB/Board(strghtfront).jpg)
@@ -29,9 +29,10 @@ We tested the SAE by hooking it up to the ESP32 and using example code to record
 
 ![MeasAngAccVsTm](https://github.com/matthartpi/Hovercopter/blob/master/Hovercopter%20-%20General/HangingDown/AngularAccelerationVsTime.png)
 
-Simulating the system with a damping factor in a Jupyter Lab IPython Notebook using an Octave Kernel gave similar results (shown below), though we didn't calculate the angular acceleration. We only measured the angle and the angular velocity.
+Simulating the system with a damping factor in [a Jupyter Lab IPython Notebook](https://github.com/matthartpi/Hovercopter/blob/master/Hovercopter%20-%20General/FullOrderObserver/HoverCopterFullOrdObs.ipynb) using an Octave Kernel gave similar results (shown below), though we didn't calculate the angular acceleration. We only measured the angle and the angular velocity.
 
 ![SimAngVelVsTm](https://github.com/matthartpi/Hovercopter/blob/master/Hovercopter%20-%20General/HangingDown/SimulatedAngularVelocityVsTime.png)
 
 ![SimAngAccVsTm](https://github.com/matthartpi/Hovercopter/blob/master/Hovercopter%20-%20General/HangingDown/SimulatedAngularAccelerationVsTime.png)
 
+## 
