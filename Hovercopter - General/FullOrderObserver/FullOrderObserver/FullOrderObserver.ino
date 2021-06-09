@@ -54,7 +54,7 @@ VCC                    any microcontroler output pin - but set also ROTARY_ENCOD
 //depending on your encoder - try 1,2 or 4 to get expected behaviour
 //#define ROTARY_ENCODER_STEPS 1
 //#define ROTARY_ENCODER_STEPS 2
-#define ROTARY_ENCODER_STEPS 4    // this gives the range around the full 360 degrees
+#define ROTARY_ENCODER_STEPS 4
 
 //instead of changing here, rather change numbers above
 AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN, ROTARY_ENCODER_BUTTON_PIN, ROTARY_ENCODER_VCC_PIN, ROTARY_ENCODER_STEPS);
@@ -85,8 +85,8 @@ void rotary_onButtonClick()
 void rotary_loop()
 {
   //gets the time passed since values were last updated
-	deltaTime = millis()-lastTime;
-	
+	while(millis()-lastTime < (unsigned long)5){}
+  deltaTime = millis()-lastTime;
 	//dont print anything unless value changed
 	if (!rotaryEncoder.encoderChanged())
 	{
@@ -236,5 +236,4 @@ PWMval_fb = constrain((PWMval + (-g1*theta-g2*theta_dot)*1023),0,1023);
 //    cm.headroom();
 //  cm.step();
 //
-  delay(5); //or do whatever you need to do...
 }
