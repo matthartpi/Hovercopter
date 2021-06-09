@@ -23,6 +23,8 @@ The hover arm mechanisms were assembled for us, so we simply had to test them to
 ![Hover Arm](https://github.com/matthartpi/Hovercopter/blob/master/BuildingPCB/Mechanism(floor).jpg)
 
 ### Testing
+In initial testing, we found that we needed to modify the PCB so that the SAE could properly be read. The pins needed to be changed from 2 and 0 on the ESP32, and we decided to connect them instead to pins 16 and 4, respectively. After changing this, we were able to read the SAE correctly.
+
 We tested the SAE by hooking it up to the ESP32 and using example code to record the angle. Graphing the data in Excel resulted in those shown below.
 
 ![MeasAngVelVsTm](https://github.com/matthartpi/Hovercopter/blob/master/HangingDown/AngularVelocityVsTime.png)
@@ -34,5 +36,6 @@ Simulating the system with a damping factor in [a Jupyter Lab IPython Notebook](
 ![SimAngVelVsTm](https://github.com/matthartpi/Hovercopter/blob/master/HangingDown/SimulatedAngularVelocityVsTime.png)
 
 ![SimAngAccVsTm](https://github.com/matthartpi/Hovercopter/blob/master/HangingDown/SimulatedAngularAccelerationVsTime.png)
+
 
 ## 
