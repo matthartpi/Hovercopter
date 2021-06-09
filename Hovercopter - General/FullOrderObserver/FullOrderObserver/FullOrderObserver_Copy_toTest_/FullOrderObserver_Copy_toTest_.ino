@@ -70,30 +70,30 @@ static float PWMval_fb;
 static float floatDeltaTime;
 void rotary_onButtonClick()
 {
-//	static unsigned long lastTimePressed = 0;
-//	//ignore multiple press in that time milliseconds
-//	if (millis() - lastTimePressed < 500)
-//	{
-//		return;
-//	}
-//	lastTimePressed = millis();
-//	//Serial.print("button pressed at ");
-//	//Serial.println(millis());
+//  static unsigned long lastTimePressed = 0;
+//  //ignore multiple press in that time milliseconds
+//  if (millis() - lastTimePressed < 500)
+//  {
+//    return;
+//  }
+//  lastTimePressed = millis();
+//  //Serial.print("button pressed at ");
+//  //Serial.println(millis());
 }
 
 //Theta read and theta dot calculation
 void rotary_loop()
 {
   //gets the time passed since values were last updated
-	deltaTime = millis()-lastTime;
-	
-	//dont print anything unless value changed
-	if (!rotaryEncoder.encoderChanged())
-	{
+  deltaTime = millis()-lastTime;
+  
+  //dont print anything unless value changed
+  if (!rotaryEncoder.encoderChanged())
+  {
     //if no change in theta
     theta_dot = 0;
-		return;
-	}
+    return;
+  }
   //set the lastTime values were updated
   lastTime = millis();
   
@@ -118,8 +118,8 @@ void rotary_loop()
 //  Serial.print(",");
 //  Serial.println(theta_dot,10);
   
-	//Serial.print("Value: ");
-	//Serial.println(rotaryEncoder.readEncoder());
+  //Serial.print("Value: ");
+  //Serial.println(rotaryEncoder.readEncoder());
 }
 
 void setup6302(){//void* pvParameters) {
@@ -182,7 +182,7 @@ void setup()
   xTaskCreatePinnedToCore(loop6302,"view6302_loop",150000,NULL,1,NULL,0);
   delay(500);
 //  setup6302();
-	//Serial.begin(115200);
+  //Serial.begin(115200);
   setupRotary();
   setupPWM();
 }
